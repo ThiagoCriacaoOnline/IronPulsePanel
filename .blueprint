@@ -1,0 +1,75 @@
+created:
+    - database/factories/RoleFactory.php
+    - database/factories/UserRoleFactory.php
+    - database/factories/PermissionFactory.php
+    - database/factories/RolePermissionFactory.php
+    - database/factories/ProfessionalProfileFactory.php
+    - database/factories/SpecialtyFactory.php
+    - database/factories/ProfessionalSpecialtyFactory.php
+    - database/factories/ProfessionalContactFactory.php
+    - database/factories/ProfessionalPayoutSettingsFactory.php
+    - database/factories/StudentFactory.php
+    - database/factories/StudentInviteFactory.php
+    - database/factories/ProfessionalStudentFactory.php
+    - database/factories/AuditLogFactory.php
+    - database/factories/ReportExportFactory.php
+    - database/factories/SystemSettingFactory.php
+    - database/factories/SupportTicketFactory.php
+    - database/factories/ApiAccessLogFactory.php
+    - database/factories/RatingFactory.php
+    - database/migrations/2026_11_19_200823_create_roles_table.php
+    - database/migrations/2026_11_19_200824_create_user_roles_table.php
+    - database/migrations/2026_11_19_200825_create_permissions_table.php
+    - database/migrations/2026_11_19_200826_create_role_permissions_table.php
+    - database/migrations/2026_11_19_200827_create_professional_profiles_table.php
+    - database/migrations/2026_11_19_200828_create_specialties_table.php
+    - database/migrations/2026_11_19_200829_create_professional_specialties_table.php
+    - database/migrations/2026_11_19_200830_create_professional_contacts_table.php
+    - database/migrations/2026_11_19_200831_create_professional_payout_settings_table.php
+    - database/migrations/2026_11_19_200832_create_students_table.php
+    - database/migrations/2026_11_19_200833_create_student_invites_table.php
+    - database/migrations/2026_11_19_200834_create_professional_students_table.php
+    - database/migrations/2026_11_19_200835_create_audit_logs_table.php
+    - database/migrations/2026_11_19_200836_create_report_exports_table.php
+    - database/migrations/2026_11_19_200837_create_system_settings_table.php
+    - database/migrations/2026_11_19_200838_create_support_tickets_table.php
+    - database/migrations/2026_11_19_200839_create_api_access_logs_table.php
+    - database/migrations/2026_11_19_200840_create_ratings_table.php
+    - app/Models/Role.php
+    - app/Models/UserRole.php
+    - app/Models/Permission.php
+    - app/Models/RolePermission.php
+    - app/Models/ProfessionalProfile.php
+    - app/Models/Specialty.php
+    - app/Models/ProfessionalSpecialty.php
+    - app/Models/ProfessionalContact.php
+    - app/Models/ProfessionalPayoutSettings.php
+    - app/Models/Student.php
+    - app/Models/StudentInvite.php
+    - app/Models/ProfessionalStudent.php
+    - app/Models/AuditLog.php
+    - app/Models/ReportExport.php
+    - app/Models/SystemSetting.php
+    - app/Models/SupportTicket.php
+    - app/Models/ApiAccessLog.php
+    - app/Models/Rating.php
+models:
+    User: {}
+    Role: { name: string, slug: string, description: 'text nullable', is_active: 'boolean default:true', is_system: 'boolean default:false', timestamps: timestamps, softdeletes: softDeletes, created_by: 'id:user nullable', updated_by: 'id:user nullable', deleted_by: 'id:user nullable' }
+    UserRole: { user_id: 'id:user', role_id: 'id:role', timestamps: timestamps, softdeletes: softDeletes, created_by: 'id:user nullable', updated_by: 'id:user nullable', deleted_by: 'id:user nullable' }
+    Permission: { name: string, slug: string, description: 'text nullable', module: string, is_sensitive: 'boolean default:false', is_active: 'boolean default:true', timestamps: timestamps, softdeletes: softDeletes, created_by: 'id:user nullable', updated_by: 'id:user nullable', deleted_by: 'id:user nullable' }
+    RolePermission: { role_id: 'id:role', permission_id: 'id:permission', timestamps: timestamps, softdeletes: softDeletes, created_by: 'id:user nullable', updated_by: 'id:user nullable', deleted_by: 'id:user nullable' }
+    ProfessionalProfile: { name: 'string:150', email: 'string:150 unique', password: 'string:255', cpf_cnpj: 'string:20 unique', email_verified_at: 'timestamp nullable', avatar: 'string:255 nullable', path_avatar: 'string:255 nullable', profession_type: 'enum:nutritionist,personal,both', council_type: 'enum:crn,cref', council_number: 'string:20', council_state: 'string:2', verification_status: 'enum:pending,approved,rejected default:pending', verified_at: 'timestamp nullable', verified_by: 'id:user nullable', rejection_reason: 'text nullable', average_rating: 'decimal:3,2 default:5.00', ratings_count: 'integer default:0', bio: 'text nullable', is_accepting_students: 'boolean default:false', is_active: 'boolean default:true', timestamps: timestamps, softdeletes: softDeletes, created_by: 'id:user nullable', updated_by: 'id:user nullable', deleted_by: 'id:user nullable' }
+    Specialty: { name: 'string:100', slug: 'string:100 unique', profession_type: 'enum:nutritionist,personal,both', description: 'text nullable', is_active: 'boolean default:true', timestamps: timestamps, softdeletes: softDeletes, created_by: 'id:user nullable', updated_by: 'id:user nullable', deleted_by: 'id:user nullable' }
+    ProfessionalSpecialty: { professional_profile_id: 'id:professional_profile', specialty_id: 'id:specialty', created_at: timestamp, created_by: 'id:user nullable', deleted_at: 'timestamp nullable', deleted_by: 'id:user nullable' }
+    ProfessionalContact: { professional_profile_id: 'id:professional_profile unique', whatsapp: 'string:20 nullable', phone: 'string:20 nullable', public_email: 'string:150 nullable', instagram: 'string:100 nullable', twitter: 'string:100 nullable', linkedin: 'string:100 nullable', tiktok: 'string:100 nullable', kawai: 'string:100 nullable', facebook: 'string:100 nullable', website: 'string:255 nullable', city: 'string:100 nullable', state: 'string:2 nullable', attendance_mode: 'enum:online,in_person,both default:online', timestamps: timestamps, softdeletes: softDeletes, created_by: 'id:user nullable', updated_by: 'id:user nullable', deleted_by: 'id:user nullable' }
+    ProfessionalPayoutSettings: { professional_profile_id: 'id:professional_profile unique', payout_mode: 'enum:direct_pix,platform_intermediation default:platform_intermediation', pix_key_type: 'enum:cpf,cnpj,email,phone,random nullable', pix_key: 'string:150 nullable', pix_holder_name: 'string:150 nullable', pix_holder_document: 'string:20 nullable', custom_fee_percentage: 'decimal:5,2 nullable', fee_terms_accepted_at: 'timestamp nullable', fee_terms_version: 'string:20 nullable', is_payout_blocked: 'boolean default:false', blocked_reason: 'text nullable', blocked_at: 'timestamp nullable', blocked_by: 'id:user nullable', timestamps: timestamps, softdeletes: softDeletes, created_by: 'id:user nullable', updated_by: 'id:user nullable', deleted_by: 'id:user nullable' }
+    Student: { name: 'string:150', email: 'string:150 unique nullable', password: 'string:255 nullable', cpf: 'string:14 unique nullable', phone: 'string:20 nullable', email_verified_at: 'timestamp nullable', invite_activated_at: 'timestamp nullable', avatar: 'string:255 nullable', path_avatar: 'string:255 nullable', birth_date: 'date nullable', gender: 'enum:male,female,other,prefer_not_to_say nullable', goal: 'enum:hypertrophy,weight_loss,conditioning,health,rehabilitation,sport_performance nullable', average_rating: 'decimal:3,2 default:5.00', ratings_count: 'integer default:0', registration_source: 'enum:app_self_signup,invite_code,backoffice default:app_self_signup', registered_by_professional_id: 'id:professional_profile nullable', terms_accepted_at: 'timestamp nullable', terms_version: 'string:20 nullable', is_active: 'boolean default:true', blocked_reason: 'text nullable', blocked_at: 'timestamp nullable', blocked_by: 'id:user nullable', timestamps: timestamps, softdeletes: softDeletes, created_by: 'id:user nullable', updated_by: 'id:user nullable', deleted_by: 'id:user nullable' }
+    StudentInvite: { professional_profile_id: 'id:professional_profile', student_id: 'id:student nullable', service_type: 'enum:training,nutrition,both default:training', code: 'string:20 unique', invite_type: 'enum:single_student,open_link default:single_student', max_uses: 'integer default:1', uses_count: 'integer default:0', expires_at: 'timestamp nullable', status: 'enum:pending,used,expired,revoked default:pending', used_at: 'timestamp nullable', used_ip: 'string:45 nullable', revoked_at: 'timestamp nullable', revoked_by_type: 'enum:professional,backoffice nullable', revoked_by_id: 'unsignedBigInteger nullable', revoke_reason: 'string:255 nullable', timestamps: timestamps, softdeletes: softDeletes, created_by: 'id:user nullable', updated_by: 'id:user nullable', deleted_by: 'id:user nullable' }
+    ProfessionalStudent: { professional_profile_id: 'id:professional_profile', student_id: 'id:student', service_type: 'enum:training,nutrition,both', status: 'enum:pending,active,paused,ended default:pending', started_at: 'timestamp nullable', ended_at: 'timestamp nullable', ended_by_type: 'enum:student,professional,backoffice nullable', ended_by_id: 'unsignedBigInteger nullable', end_reason: 'string:255 nullable', timestamps: timestamps, softdeletes: softDeletes, created_by: 'id:user nullable', updated_by: 'id:user nullable', deleted_by: 'id:user nullable' }
+    AuditLog: { actor_type: 'enum:backoffice_user,professional,student,system', actor_id: 'unsignedBigInteger nullable', actor_name: 'string:150 nullable', portal: 'enum:backoffice,professional_panel,student_app,website,api_webhook', action: 'string:50', auditable_type: 'string:100', auditable_id: 'unsignedBigInteger nullable', old_values: 'json nullable', new_values: 'json nullable', ip_address: 'string:45 nullable', user_agent: 'text nullable', request_url: 'text nullable', request_method: 'string:10 nullable', severity: 'enum:info,warning,critical default:info', created_at: timestamp }
+    ReportExport: { user_id: 'id:user', report_type: 'string:80', filters_used: 'json nullable', file_format: 'enum:csv,xlsx,pdf', file_path: 'string:255 nullable', rows_count: 'integer default:0', status: 'enum:processing,completed,failed default:processing', error_message: 'text nullable', expires_at: 'timestamp nullable', downloaded_at: 'timestamp nullable', ip_address: 'string:45 nullable', timestamps: timestamps, softdeletes: softDeletes, deleted_by: 'id:user nullable' }
+    SystemSetting: { group: 'string:50', key: 'string:100 unique', value: text, value_type: 'enum:string,integer,decimal,boolean,json default:string', description: 'text nullable', is_public: 'boolean default:false', timestamps: timestamps, updated_by: 'id:user nullable' }
+    SupportTicket: { protocol_number: 'string:30 unique', requester_type: 'enum:professional,student', requester_id: unsignedBigInteger, related_professional_id: 'id:professional_profile nullable', related_student_id: 'id:student nullable', category: 'enum:financial_dispute,verification_issue,abuse_report,technical_bug,lgpd_request', priority: 'enum:low,medium,high,urgent default:medium', status: 'enum:open,in_progress,waiting_user,resolved,closed default:open', subject: 'string:150', description: text, assigned_to: 'id:user nullable', resolved_at: 'timestamp nullable', resolved_by: 'id:user nullable', resolution_notes: 'text nullable', timestamps: timestamps, softdeletes: softDeletes, created_by: 'id:user nullable', updated_by: 'id:user nullable', deleted_by: 'id:user nullable' }
+    ApiAccessLog: { portal: 'enum:student_app,professional_panel,website', actor_type: 'enum:student,professional,guest default:guest', actor_id: 'unsignedBigInteger nullable', method: 'string:10', endpoint: 'string:255', status_code: integer, response_time_ms: integer, ip_address: 'string:45 nullable', created_at: timestamp }
+    Rating: { professional_student_id: 'id:professional_student', reviewer_type: 'enum:student,professional', reviewer_id: 'unsignedBigInteger index', reviewed_type: 'enum:student,professional', reviewed_id: 'unsignedBigInteger index', score: unsignedTinyInteger, comment: 'text nullable', tags: 'json nullable', moderation_status: 'enum:published,hidden_by_moderation,reported default:published', moderated_at: 'timestamp nullable', moderated_by: 'id:user nullable', moderation_reason: 'text nullable', timestamps: timestamps, softdeletes: softDeletes, created_by: 'id:user nullable', updated_by: 'id:user nullable', deleted_by: 'id:user nullable' }
