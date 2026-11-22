@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use LogicException;
+use Illuminate\Database\Eloquent\Builder;
 
 class Role extends Model
 {
@@ -93,10 +94,21 @@ class Role extends Model
             ->wherePivotNull('deleted_at');
     }
 
-    public function syncPermissions(array $permissionIds, ?int $actorId = null): void
+    public function syncPermissions(array $permissionIds, ?User $actor = null): void
     {
-        $actorId ??= auth()->id();
+        $actor ??= auth()->user();
+        $actorId = $actor?->id;
         $permissionIds = array_values(array_unique(array_map('intval', $permissionIds)));
+
+        if ($actor && ! $actor->isSuperAdmin()) {
+            $grantable = Permission::query()->whereIn('slug', $actor->permissionSlugs())->pluck('id')->all();
+            $locked = $this->permissions()->whereNotIn('permissions.id', $grantable)->pluck('permissions.id')->all();
+
+            $permissionIds = array_values(array_unique([
+                ...array_intersect($permissionIds, $grantable),
+                ...$locked,
+            ]));
+        }
 
         DB::transaction(function () use ($permissionIds, $actorId) {
             $links = RolePermission::withTrashed()
@@ -104,7 +116,6 @@ class Role extends Model
                 ->get()
                 ->keyBy('permission_id');
 
-            // remove (soft delete) o que saiu da seleção
             foreach ($links as $permissionId => $link) {
                 if (! $link->trashed() && ! in_array($permissionId, $permissionIds, true)) {
                     $link->forceFill(['deleted_by' => $actorId])->save();
@@ -112,7 +123,6 @@ class Role extends Model
                 }
             }
 
-            // cria o que entrou, restaurando vínculos antigos em vez de duplicar
             foreach ($permissionIds as $permissionId) {
                 $link = $links->get($permissionId);
 
@@ -129,5 +139,18 @@ class Role extends Model
                 }
             }
         });
+    }
+
+    public function scopeAssignableBy(Builder $query, User $user): Builder
+    {
+        if ($user->isSuperAdmin()) {
+            return $query;
+        }
+
+        return $query
+            ->where('slug', '!=', self::SUPER_ADMIN_SLUG)
+            ->whereDoesntHave('permissions', fn (Builder $permissions) => $permissions
+                ->where('permissions.is_active', true)
+                ->whereNotIn('permissions.slug', $user->permissionSlugs()));
     }
 }

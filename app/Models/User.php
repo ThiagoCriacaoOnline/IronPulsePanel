@@ -6,6 +6,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Database\Factories\UserFactory;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -29,10 +31,52 @@ use Illuminate\Support\Str;
  */
 #[Fillable(['name', 'display_name', 'email', 'password', 'avatar', 'path_avatar'])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
+
+    private ?bool $isSuperAdminCache = null;
+    private ?array $permissionSlugsCache = null;
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $panel->getId() === 'admin'
+            && $this->roles()->where('roles.is_active', true)->exists();
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->isSuperAdminCache ??= $this->roles()
+            ->where('roles.is_active', true)
+            ->where('roles.slug', Role::SUPER_ADMIN_SLUG)
+            ->exists();
+    }
+
+    /** @return array<int, string> */
+    public function permissionSlugs(): array
+    {
+        return $this->permissionSlugsCache ??= $this->roles()
+            ->where('roles.is_active', true)
+            ->with(['permissions' => fn ($query) => $query->where('permissions.is_active', true)])
+            ->get()
+            ->flatMap(fn (Role $role) => $role->permissions)
+            ->pluck('slug')
+            ->unique()
+            ->values()
+            ->all();
+    }
+
+    public function hasPermission(string $slug): bool
+    {
+        return $this->isSuperAdmin() || in_array($slug, $this->permissionSlugs(), true);
+    }
+
+    public function flushAccessCache(): void
+    {
+        $this->isSuperAdminCache = null;
+        $this->permissionSlugsCache = null;
+    }
 
     /**
      * Get the attributes that should be cast.

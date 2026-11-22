@@ -4,56 +4,30 @@ namespace App\Policies;
 
 use App\Models\Role;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 
-class RolePolicy
+class RolePolicy extends ModulePolicy
 {
-    public function viewAny(User $user): bool
+    protected function module(): string
     {
-        return true;
+        return 'roles';
     }
 
-    public function view(User $user, Role $role): bool
+    /** @param  Role  $record */
+    public function update(User $user, Model $record): bool
     {
-        return true;
+        return $this->can($user, 'update')
+            && ($record->slug !== Role::SUPER_ADMIN_SLUG || $user->isSuperAdmin());
     }
 
-    public function create(User $user): bool
+    /** @param  Role  $record */
+    public function delete(User $user, Model $record): bool
     {
-        return true;
+        return $this->can($user, 'delete') && ! $record->isProtected();
     }
 
-    public function update(User $user, Role $role): bool
+    public function forceDelete(User $user, Model $record): bool
     {
-        return true;
-    }
-
-    public function delete(User $user, Role $role): bool
-    {
-        return ! $role->isProtected();
-    }
-
-    public function deleteAny(User $user): bool
-    {
-        return true;
-    }
-
-    public function restore(User $user, Role $role): bool
-    {
-        return true;
-    }
-
-    public function restoreAny(User $user): bool
-    {
-        return true;
-    }
-
-    public function forceDelete(User $user, Role $role): bool
-    {
-        return ! $role->isProtected();
-    }
-
-    public function forceDeleteAny(User $user): bool
-    {
-        return true;
+        return $this->delete($user, $record);
     }
 }

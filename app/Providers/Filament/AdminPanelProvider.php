@@ -35,6 +35,7 @@ class AdminPanelProvider extends PanelProvider
             ->spa()
             ->sidebarCollapsibleOnDesktop()
             ->maxContentWidth(Width::Full)
+            ->strictAuthorization()
             ->colors([
                 'primary' => Color::hex('#FF5A1F'),
                 'success' => Color::hex('#22A65B'),

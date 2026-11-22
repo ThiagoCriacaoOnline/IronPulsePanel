@@ -70,7 +70,10 @@ class RoleForm
 
     protected static function permissionFieldsets(): array
     {
+        $user = auth()->user();
+
         return Permission::query()
+            ->when(! $user->isSuperAdmin(), fn ($query) => $query->whereIn('slug', $user->permissionSlugs()))
             ->orderBy('name')
             ->get()
             ->groupBy('module')
