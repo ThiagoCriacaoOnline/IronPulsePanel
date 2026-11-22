@@ -1,0 +1,59 @@
+<?php
+
+namespace App\Policies;
+
+use App\Models\Role;
+use App\Models\User;
+
+class RolePolicy
+{
+    public function viewAny(User $user): bool
+    {
+        return true;
+    }
+
+    public function view(User $user, Role $role): bool
+    {
+        return true;
+    }
+
+    public function create(User $user): bool
+    {
+        return true;
+    }
+
+    public function update(User $user, Role $role): bool
+    {
+        return true;
+    }
+
+    public function delete(User $user, Role $role): bool
+    {
+        return ! $role->isProtected();
+    }
+
+    public function deleteAny(User $user): bool
+    {
+        return true;
+    }
+
+    public function restore(User $user, Role $role): bool
+    {
+        return true;
+    }
+
+    public function restoreAny(User $user): bool
+    {
+        return true;
+    }
+
+    public function forceDelete(User $user, Role $role): bool
+    {
+        return ! $role->isProtected();
+    }
+
+    public function forceDeleteAny(User $user): bool
+    {
+        return true;
+    }
+}
